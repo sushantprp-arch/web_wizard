@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Movie & Series Recommendation Hub — Web Wizard</title>
+  <meta name="description" content="Stylish Movie / Series Recommendation Hub — HTML & CSS only demo (no JS)">
+
+  <!-- Google Fonts (only external resource) -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+
+  <style>
+    /* -----------------------
+       Reset + Variables
+       ----------------------- */
+    :root{
+      --bg-0: #071428;
+      --bg-1: #071a2b;
+      --card: rgba(255,255,255,0.04);
+      --glass: rgba(255,255,255,0.03);
+      --muted: #b6c7d6;
+      --accent: #6ee7b7;
+      --accent2: #60a5fa;
+      --accent3: #f472b6;
+      --glass-2: rgba(255,255,255,0.02);
+      --maxw: 1200px;
+      --radius: 14px;
+      --shadow: 0 12px 40px rgba(2,6,23,0.6);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(48,79,255,0.06), transparent),
+                  linear-gradient(180deg,var(--bg-0),var(--bg-1));
+      color:#eaf6ff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding:36px 20px;
+    }
+
+    .container{
+      width:100%;
+      max-width:var(--maxw);
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border:1px solid rgba(255,255,255,0.03);
+      border-radius:18px;
+      padding:26px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+
+    /* Header */
+    header{
+      display:flex;
+      align-items:center;
+      gap:18px;
+      justify-content:space-between;
+      margin-bottom:18px;
+    }
+    .brand{display:flex;gap:14px;align-items:center}
+    .logo{
+      width:64px;height:64px;border-radius:12px;
+      background: linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;color:#04202a;font-size:20px;letter-spacing:-0.6px;
+      box-shadow: 0 8px 30px rgba(96,165,250,0.08);
+    }
+    h1{margin:0;font-size:20px}
+    p.lead{margin:0;color:var(--muted);font-size:13px}
+
+    /* Header actions */
+    .header-actions{display:flex;gap:10px;align-items:center}
+    .cta{
+      display:inline-flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;
+      font-weight:600;background:linear-gradient(90deg,var(--accent),var(--accent2));
+      color:#04202a;text-decoration:none;border:0;cursor:pointer;
+    }
+    .outline{
+      padding:10px 14px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);font-weight:600;text-decoration:none;
+    }
+
+    /* Main layout */
+    main{
+      display:grid;
+      grid-template-columns: 1fr 360px;
+      gap:22px;
+      align-items:start;
+    }
+    @media (max-width:1000px){ main{grid-template-columns: 1fr 1fr} }
+    @media (max-width:760px){ main{grid-template-columns:1fr} header{flex-direction:column;align-items:flex-start} }
+
+    /* Left column */
+    .left{
+      display:flex;flex-direction:column;gap:18px;
+    }
+
+    /* Hero / Search */
+    .hero{
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:12px;padding:18px;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .hero-top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+    .hero .title{
+      display:flex;flex-direction:column;
+    }
+    .title h2{margin:0;font-family:'Playfair Display', serif;font-size:22px}
+    .title p{margin:0;color:var(--muted);font-size:13px}
+
+    /* Search bar + controls */
+    .search-row{display:flex;gap:12px;align-items:center;margin-top:6px}
+    .search{
+      flex:1;display:flex;gap:8px;align-items:center;background:var(--glass);padding:10px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
+    }
+    .search input{
+      background:transparent;border:0;outline:none;color:inherit;font-size:15px;width:100%;
+    }
+    .search .btn{
+      background:linear-gradient(90deg,var(--accent),var(--accent2));padding:8px 12px;border-radius:10px;border:0;font-weight:700;color:#04202a;cursor:pointer;
+    }
+
+    /* Trending carousel */
+    .trending{
+      margin-top:6px;
+      display:flex;flex-direction:column;gap:10px;
+    }
+    .tr-title{display:flex;justify-content:space-between;align-items:center}
+    .tr-list{
+      display:flex;gap:12px;padding:10px;border-radius:12px;overflow:auto;
+      scroll-snap-type:x mandatory;
+      -webkit-overflow-scrolling:touch;
+      border:1px solid rgba(255,255,255,0.02);background:linear-gradient(90deg, rgba(255,255,255,0.01), transparent);
+    }
+    .tr-card{
+      min-width:200px;flex:0 0 200px;border-radius:12px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      scroll-snap-align:center;border:1px solid rgba(255,255,255,0.02);
+      display:flex;flex-direction:column;gap:8px;
+    }
+    .poster{
+      width:100%;height:110px;border-radius:8px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03)
+    }
+    .rating{font-weight:700;font-size:13px;color:var(--muted)}
+
+    /* Filters (tabs implemented with radios) */
+    .filters{
+      display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 0;
+    }
+    .filters label{
+      padding:8px 12px;border-radius:999px;background:transparent;border:1px solid rgba(255,255,255,0.03);cursor:pointer;font-weight:600;color:var(--muted);
+    }
+    /* hide radios */
+    .filters input{display:none}
+
+    /* CSS to show the section for the selected genre */
+    .grid-sections > section{display:none}
+    #tab-all:checked ~ .content .grid-sections #all {display:grid}
+    #tab-action:checked ~ .content .grid-sections #action {display:grid}
+    #tab-drama:checked ~ .content .grid-sections #drama {display:grid}
+    #tab-comedy:checked ~ .content .grid-sections #comedy {display:grid}
+    #tab-animated:checked ~ .content .grid-sections #animated {display:grid}
+
+    /* Movie grid */
+    .grid-sections > section{
+      grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+      gap:14px;display:grid;
+    }
+    .card-movie{
+      background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+      padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);
+      display:flex;flex-direction:column;gap:10px;
+      transition:transform .28s ease, box-shadow .28s ease;
+    }
+    .card-movie:hover{transform:translateY(-8px);box-shadow:0 18px 50px rgba(2,6,23,0.6)}
+    .card-top{display:flex;gap:12px;align-items:center}
+    .thumb{width:86px;height:124px;border-radius:8px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03)}
+    .meta{display:flex;flex-direction:column;gap:6px}
+    .meta h4{margin:0;font-size:16px}
+    .meta .sub{font-size:13px;color:var(--muted)}
+    .tags{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{padding:6px 8px;border-radius:999px;font-size:12px;background:rgba(255,255,255,0.02);color:var(--muted);border:1px solid rgba(255,255,255,0.02)}
+
+    .card-bottom{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .open-detail{
+      text-decoration:none;padding:8px 10px;border-radius:10px;font-weight:700;background:linear-gradient(90deg,var(--accent),var(--accent2));color:#04202a;
+      border:0;cursor:pointer;
+    }
+    .fav{padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,0.03);font-weight:700;color:var(--muted)}
+
+    /* SIDEBAR (right) */
+    aside{
+      position:sticky;top:24px;
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .box{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);
+    }
+    .small{color:var(--muted);font-size:13px}
+
+    /* Detail modal using checkbox trick */
+    /* invisible checkbox */
+    input.movie-modal{display:none}
+    .modal{
+      position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(0deg, rgba(2,6,23,0.72), rgba(2,6,23,0.86));
+      padding:28px;opacity:0;pointer-events:none;transition:opacity .28s ease;
+    }
+    /* when any modal checkbox is checked, reveal that modal via sibling selector */
+    /* We'll target modals by ID: modal-1, modal-2, ... */
+    #m1:checked ~ .modal#modal-1,
+    #m2:checked ~ .modal#modal-2,
+    #m3:checked ~ .modal#modal-3,
+    #m4:checked ~ .modal#modal-4,
+    #m5:checked ~ .modal#modal-5
+    { opacity:1; pointer-events:auto; }
+
+    .modal-card{
+      width:min(1000px,96%);max-height:86vh;overflow:auto;border-radius:12px;padding:18px;background:linear-gradient(180deg,#081226,#071226);border:1px solid rgba(255,255,255,0.03);
+      display:grid;grid-template-columns: 1fr 380px;gap:18px;
+    }
+    @media (max-width:980px){ .modal-card{grid-template-columns:1fr} }
+
+    .modal-poster{height:420px;border-radius:10px;background-size:cover;background-position:center;border:1px solid rgba(255,255,255,0.03)}
+    .modal-right{display:flex;flex-direction:column;gap:10px}
+
+    .close-btn{
+      position:absolute;top:22px;right:22px;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);cursor:pointer;color:var(--muted);
+    }
+
+    /* tiny footer */
+    footer{margin-top:18px;display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:13px;padding-top:12px;border-top:1px dashed rgba(255,255,255,0.02)}
+
+    /* Accessibility focus */
+    a:focus, button:focus, input:focus, label:focus{
+      outline:3px solid rgba(96,165,250,0.14);
+      outline-offset:2px;
+    }
+
+    /* Decorative gradient strip */
+    .accent-strip{height:6px;border-radius:6px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="container" role="main">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">MW</div>
+        <div>
+          <h1>Movie / Series Recommendation Hub</h1>
+          <p class="lead">Stylish UI-first hub — Trending picks, search UI, and genre-based filtering. (HTML + CSS)</p>
+        </div>
+      </div>
+
+      <div class="header-actions" aria-hidden="false">
+        <a class="outline" href="#">GitHub</a>
+        <a class="cta" href="#browse">Browse</a>
+      </div>
+    </header>
+
+    <main>
+      <!-- LEFT COLUMN -->
+      <section class="left">
+        <!-- Hero -->
+        <div class="hero" id="browse" aria-label="search and trending">
+          <div class="hero-top">
+            <div class="title">
+              <h2>Find your next favorite — trending & curated picks</h2>
+              <p class="small">Search titles, filter by genre, or explore trending picks. All interactions are CSS-only for a polished frontend demo.</p>
+            </div>
+
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+              <div class="small">Time limit: 4 hours • Frontend-only demo</div>
+              <div class="small">Deliver: 4 UI modules, README, deployed link</div>
+            </div>
+          </div>
+
+          <!-- Search row -->
+          <div class="search-row" style="margin-top:8px">
+            <div class="search" role="search" aria-label="Search movies or series">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="rgba(255,255,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="rgba(255,255,255,0.6)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <input type="search" placeholder="Search movies, series, actors (UI-only)" aria-label="Search">
+              <button class="btn" title="Search (UI-only)">Search</button>
+            </div>
+
+            <div style="display:flex;gap:10px">
+              <button class="outline" title="Advanced filters (UI)">Filters</button>
+              <button class="outline" title="Deploy your app">Deploy</button>
+            </div>
+          </div>
+
+          <!-- Trending -->
+          <div class="trending" aria-label="now trending">
+            <div class="tr-title">
+              <strong>Now Trending</strong>
+              <div class="small">Curated by editors • CSS-only carousel</div>
+            </div>
+
+            <div class="tr-list" role="list">
+              <!-- trending cards -->
+              <article class="tr-card" role="listitem" aria-label="Trend: Neon Chase">
+                <div class="poster" style="background-image: url('https://images.unsplash.com/photo-1517604931442-1d7c0d3a4f29?q=80&w=600&auto=format&fit=crop&s=1');"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-weight:800">Neon Chase</div>
+                  <div class="rating">8.9 ★</div>
+                </div>
+                <div class="small">Action • 2025</div>
+              </article>
+
+              <article class="tr-card" role="listitem" aria-label="Trend: Quiet Harbor">
+                <div class="poster" style="background-image: url('https://images.unsplash.com/photo-1505685296765-3a2736de412f?q=80&w=600&auto=format&fit=crop&s=2');"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-weight:800">Quiet Harbor</div>
+                  <div class="rating">8.3 ★</div>
+                </div>
+                <div class="small">Drama • 2024</div>
+              </article>
+
+              <article class="tr-card" role="listitem" aria-label="Trend: Laugh Off">
+                <div class="poster" style="background-image: url('https://images.unsplash.com/photo-1505685296765-3a2736de412f?q=80&w=600&auto=format&fit=crop&s=3');"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-weight:800">Laugh Off</div>
+                  <div class="rating">7.6 ★</div>
+                </div>
+                <div class="small">Comedy • 2023</div>
+              </article>
+
+              <article class="tr-card" role="listitem" aria-label="Trend: Skybound">
+                <div class="poster" style="background-image: url('https://images.unsplash.com/photo-1542204165-3d0f9d2d5b9c?q=80&w=600&auto=format&fit=crop&s=4');"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-weight:800">Skybound</div>
+                  <div class="rating">8.7 ★</div>
+                </div>
+                <div class="small">Sci-Fi • 2025</div>
+              </article>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Filters (Radios) -->
+        <div style="background:transparent;padding:8px 2px">
+          <!-- radio inputs for tabbed filter; placed BEFORE the content to use sibling selectors -->
+          <div class="filters" role="tablist" aria-label="genre filters">
+            <input type="radio" name="genre" id="tab-all" checked />
+            <label for="tab-all" role="tab" tabindex="0">All</label>
+
+            <input type="radio" name="genre" id="tab-action" />
+            <label for="tab-action" role="tab" tabindex="0">Action</label>
+
+            <input type="radio" name="genre" id="tab-drama" />
+            <label for="tab-drama" role="tab" tabindex="0">Drama</label>
+
+            <input type="radio" name="genre" id="tab-comedy" />
+            <label for="tab-comedy" role="tab" tabindex="0">Comedy</label>
+
+            <input type="radio" name="genre" id="tab-animated" />
+            <label for="tab-animated" role="tab" tabindex="0">Animated</label>
+          </div>
+        </div>
+
+        <!-- Content area that responds to selected radio -->
+        <div class="content">
+          <div class="grid-sections">
+            <!-- ALL -->
+            <section id="all" aria-label="all movies">
+              <!-- Movie Card 1 -->
+              <article class="card-movie" aria-labelledby="m1-title">
+                <div class="card-top">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1517604931442-1d7c0d3a4f29?q=80&w=600&auto=format&fit=crop&s=1')" role="img" aria-label="Neon Chase poster"></div>
+                  <div class="meta">
+                    <h4 id="m1-title">Neon Chase</h4>
+                    <div class="sub">Action • 2025 • 2h 14m</div>
+                    <div class="tags" aria-hidden="false">
+                      <span class="tag">Action</span><span class="tag">Crime</span><span class="tag">Thriller</span>
+                    </div>
+                  </div>
+                </div>
+                <p class="small">A high-octane, neon-soaked chase across a futuristic metropolis. Stylish visuals and pulse-pounding score.</p>
+
+                <div class="card-bottom">
+                  <!-- modal trigger -->
+                  <label for="m1" class="open-detail" role="button" tabindex="0">View Details</label>
+                  <button class="fav" aria-pressed="false">＋ Watchlist</button>
+                </div>
+              </article>
+
+              <!-- Movie Card 2 -->
+              <article class="card-movie" aria-labelledby="m2-title">
+                <div class="card-top">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1505685296765-3a2736de412f29?q=80&w=600&auto=format&fit=crop&s=2')" role="img" aria-label="Quiet Harbor poster"></div>
+                  <div class="meta">
+                    <h4 id="m2-title">Quiet Harbor</h4>
+                    <div class="sub">Drama • 2024 • 1h 55m</div>
+                    <div class="tags"><span class="tag">Drama</span><span class="tag">Family</span></div>
+                  </div>
+                </div>
+                <p class="small">Interwoven stories of a coastal town facing change — intimate performances and luminous cinematography.</p>
+
+                <div class="card-bottom">
+                  <label for="m2" class="open-detail" role="button" tabindex="0">View Details</label>
+                  <button class="fav">＋ Watchlist</button>
+                </div>
+              </article>
+
+              <!-- Movie Card 3 -->
+              <article class="card-movie" aria-labelledby="m3-title">
+                <div class="card-top">
+                  <div class="thumb" style="background-image:url('https://images.unsplash.com/photo-1505685296765-3a2736de412f29?q=80&w=600&auto=format&fit=crop&s=3')" role="img" aria-label="Laugh Off poster"></div>
+                  <div class="meta">
+                    <h4 id="m3-title">Laugh Off</h4>
+                    <div class="sub">Comedy • 2023 • 1h 40m</div>
+                    <div class="tags"><span class="tag">Comedy</span><span class="tag">RomCom</span></div>
+                  </div>
+                </div>
+                <p class="small">Bright, witty, and warm — a rom-com that leans into absurd characters and genuine heart.</p>
+
+                <div class="card-bottom">
+                  <label for="m3" class="open-detail" role="button" tabindex="0">View Details</label>
+                  <button class="fav">＋ Watchlist</button>
+                </div>
+              </article>
+
+              <!-- Movie Card 4 -->
+              <article class="card-movie" aria-labelledby="m4-title">
+                <div class="card-top">
+                  <div class="thumb
